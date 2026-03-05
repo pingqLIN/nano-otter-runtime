@@ -36,6 +36,9 @@
 - 檢查模型完整性與 SHA256
 - 啟動獨立 Chrome Profile（不污染日常資料）
 - 自動開啟聊天測試頁（含 Echo fallback）
+- `NANO Exchange Layer`：單一模型連線下，提供多實體辨識/記錄/保護
+- 男來電/女來電轉換機制（`callerStyle` 封包欄位 + 路由前綴）
+- 多人聊天室情境頁（同頁模擬多瀏覽器、多帳號）
 - 提供選單與導覽頁，降低初次使用的操作門檻
 
 ## 路徑常態化規則
@@ -49,11 +52,62 @@
 4. Probe HTTP Port 不再依賴固定值，會自動選可用埠並顯示實際網址。
 5. HTTP 模式下，啟動頁必須位於 `probe/` 目錄內，確保 URL 與本機伺服器路徑一致。
 
+## 只想先試試看？（不需要跑本專案）
+
+如果你只是想感受一下 Chrome 內建小模型的能力，不需要安裝任何東西，直接在 Chrome 開啟以下連結就能對話：
+
+### Step 1：開啟設定頁，啟用 Internal Debug Pages
+
+```text
+chrome://flags/#on-device-model-enable-internal-debug-pages
+```
+
+> 將 `enable-internal-debug-pages` 設為 **Enabled**，然後重新啟動 Chrome。
+
+### Step 2：開啟對話頁面
+
+```text
+chrome://on-device-internals/
+```
+
+進入後切換到 **Tools** 頁籤，載入預設模型（**Load Default**），即可直接在輸入框與 Gemini Nano 對話。
+
+> 💡 這是最快速的驗證方式，確認你的裝置模型已就緒後，再來跑本專案的完整功能。
+
+---
+
 ## 快速開始
 
 1. 在專案根目錄執行 `start.cmd`。
 2. 選擇 `5`（Import -> Check -> Start），或依序執行 `1`、`2`、`3`。
 3. 開啟終端機輸出的網址：`http://localhost:<port>/chat-window.html`。
+4. 多實體情境測試頁：`http://localhost:<port>/multi-entity-chat.html`。
+
+## NANO 交換層（A 目標）
+
+本專案新增前端交換層 `nano-exchange-layer.js`，網頁版與擴充版聊天頁都先走此層，再觸發模型呼叫。
+
+- `identify`：以 `entityId / browserId / accountId / callerStyle / channel` 辨識對話實體
+- `record`：紀錄每次 `message-in / message-out / route / mode` 稽核事件（audit trail）
+- `protect`：輸入去敏感（email/token）、長度限制、節流、防止單模型併發衝突（序列化）
+- `switch`：在單一模型 session 下，用轉換前綴強制隔離不同實體上下文
+
+## 多人聊天室情境（B 目標）
+
+示範頁：`probe/multi-entity-chat.html`
+
+預設三種角色：
+
+1. 男來電 A（`browser-a / user-m-001 / male-call`）
+2. 女來電 B（`browser-b / user-f-204 / female-call`）
+3. 主管 C（`browser-c / manager-009 / neutral`）
+
+執行辦法：
+
+1. 先用 `start.cmd` 啟動本機環境。
+2. 打開 `http://localhost:<port>/multi-entity-chat.html`。
+3. 點選 `一鍵跑情境`，觀察時間線與右側 `audit/entity snapshot`。
+4. 再手動反覆切換不同角色發問，確認回覆不混淆實體脈絡。
 
 ## 模型檔案
 
@@ -125,7 +179,14 @@ git check-ignore -v model\2025.8.8.1141\weights.bin
 - `scripts/Start-GeminiNanoChrome.ps1`：啟動 Chrome + 測試頁
 - `scripts/Export-GitHubRepo.ps1`：匯出乾淨 repo
 - `probe/chat-window.html`：聊天測試頁
+- `probe/chat-window.js`：聊天頁邏輯（交換層路由）
+- `probe/nano-exchange-layer.js`：交換層核心
+- `probe/multi-entity-chat.html`：多人情境頁
+- `probe/multi-entity-chat.js`：多人情境控制器
 - `probe/prompt-api-probe.html`：Prompt API 探測頁
+- `extension/chat-window.html`：側邊欄聊天頁（交換層）
+- `extension/chat-window.js`：側邊欄邏輯（交換層路由）
+- `extension/nano-exchange-layer.js`：擴充版交換層核心
 - `guide/index.html`：圖文操作導覽
 
 ## 手動命令（進階）
