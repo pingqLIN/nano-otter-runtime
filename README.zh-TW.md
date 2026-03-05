@@ -4,6 +4,8 @@
 
 # Gemini Nano Local Starter
 
+> **[English Version](README.md)**
+
 將本機 Chrome 的 Gemini Nano（OptGuide On-Device Model）整理成可重複啟動、可驗證、可分享的專案模板。
 
 ## 事件背景
@@ -139,3 +141,17 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Start-GeminiNanoChrome.ps1
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\Import-OptGuideModel.ps1 -SourceVersionDir "C:\Path\To\OptGuideOnDeviceModel\<version>"
 ```
+
+## AI 輔助開發聲明
+
+本專案在開發過程中使用 AI 工具輔助。
+
+**使用的 AI 模型 / 服務：**
+
+- Gemini 2.5 Pro（Google Antigravity）
+
+> ⚠️ **免責聲明：** 雖然作者已盡力審查與驗證 AI 生成的內容，但無法保證其正確性、安全性或適用性。使用者需自行承擔風險。
+
+## License
+
+[MIT License](https://opensource.org/licenses/MIT)
