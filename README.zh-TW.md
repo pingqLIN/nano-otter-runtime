@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="nano-otter-runtime.png" alt="nano-otter-runtime banner" width="100%">
+  <img src="nano-otter-runtime2.png" alt="nano-otter-runtime banner" width="100%">
 </p>
 
 # Gemini Nano Local Starter

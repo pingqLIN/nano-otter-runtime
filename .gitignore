@@ -3,10 +3,23 @@
 extension/
 artifacts/
 
-# local model package (very large, machine-specific)
+# local model package — 排除大型模型檔，允許 metadata
 model/**
 !model/.gitkeep
 !model/README.md
+# 1. 解鎖版本資料夾本身（讓子路徑的 negation 才能生效）
+!model/*/
+# 2. 允許 metadata 相關檔案
+!model/*/manifest.json
+!model/*/on_device_model_execution_config.pb
+!model/*/_metadata/
+!model/*/_metadata/verified_contents.json
+# 3. 確保大型二進位還是被排除
+model/**/*.bin
+model/**/*.pb.bin
+model/**/adapter_cache*
+model/**/encoder_cache*
+
 
 # optional temp outputs
 *.log
