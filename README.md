@@ -2,13 +2,27 @@
 
 將本機 Chrome 的 Gemini Nano（OptGuide On-Device Model）整理成可重複啟動、可驗證、可分享的專案模板。
 
+## 事件背景
+
+2025 年，安全專家 **Zephyrianna** 在 X 平台揭露：Google Chrome PC 版會在**未通知使用者**的情況下，靜默下載約 **4 GB** 的 AI 模型檔案（`weights.bin`），存放於：
+
+```text
+%LOCALAPPDATA%\Google\Chrome\User Data\OptGuideOnDeviceModel\
+```
+
+經分析確認，該檔案正是 **Gemini Nano**——Chrome 用於驅動內建 AI API（Prompt API）的本機推論模型。由於檔案設為唯讀，就算手動刪除，Chrome 仍會自動重新下載。
+
+此事件由香港科技媒體 [HKEPC](https://www.facebook.com/hkepc/posts/pfbid02CKkYaqJoHQQLRjPPAfohQWHmWMqCgpMxTjr257K1d57GfinvxuAVMdHdbpCtPDyil) 及 [Winaero](https://winaero.com/) 報道，引發廣泛討論。
+
+> **本專案的出發點**：既然模型已經在你硬碟裡，不如把它用好——在受控環境下啟動、驗證、並實際對話測試，而非讓它靜默佔用空間。
+
 ## 功能摘要
 
 - 匯入本機模型包（`weights.bin` + metadata）
 - 檢查模型完整性與 SHA256
 - 啟動獨立 Chrome Profile（不污染日常資料）
 - 自動開啟聊天測試頁（含 Echo fallback）
-- 提供選單與導覽頁，方便新手操作
+- 提供選單與導覽頁，降低初次使用的操作門檻
 
 ## 路徑常態化規則
 
@@ -74,18 +88,18 @@ git status --short
 git check-ignore -v model\2025.8.8.1141\weights.bin
 ```
 
-如果 `git status` 出現 `model/<version>/weights.bin`，請先停止提交並檢查 `.gitignore`。
+若 `git status` 顯示 `model/<version>/weights.bin`，請中止提交並確認 `.gitignore` 設定是否正確。
 
 ## 模式判讀
 
 - `Model mode`：已偵測可用模型 API，回覆來自本機模型。
 - `Echo mode`：目前未偵測到可用模型 API，先用 Echo 驗證輸入輸出流程。
 
-若看到 `Echo mode`：
+若顯示 `Echo mode`，請依序確認：
 
-1. 重新執行 `start.cmd`，用專案腳本重啟 Chrome。
-2. 確認網址為 `http://localhost:<port>/chat-window.html`（非 `file://`）。
-3. 如仍異常，打開 `probe/prompt-api-probe.html` 進一步檢查 API 路徑。
+1. 重新執行 `start.cmd`，透過專案腳本重啟 Chrome。
+2. 確認網址格式為 `http://localhost:<port>/chat-window.html`（不可使用 `file://` 開啟）。
+3. 若問題持續，請開啟 `probe/prompt-api-probe.html` 進一步診斷 API 路徑。
 
 ## 主要檔案
 
@@ -98,7 +112,7 @@ git check-ignore -v model\2025.8.8.1141\weights.bin
 - `scripts/Export-GitHubRepo.ps1`：匯出乾淨 repo
 - `probe/chat-window.html`：聊天測試頁
 - `probe/prompt-api-probe.html`：Prompt API 探測頁
-- `guide/index.html`：新手圖文導覽
+- `guide/index.html`：圖文操作導覽
 
 ## 手動命令（進階）
 
@@ -130,6 +144,6 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Export-GitHubRepo.ps1
 - `.chrome-user-data/` 已忽略（本機執行快取）
 - clone 後請先重新匯入模型包到 `model/<version>/`
 
-## 新手導覽
+## 操作導覽
 
 - 開啟 `guide/index.html`
