@@ -8,7 +8,7 @@
 
 ## 事件背景
 
-2025 年，有資安研究者公開揭露：Google Chrome PC 版會在**未通知使用者**的情況下，靜默下載約 **4 GB** 的 AI 模型檔案（`weights.bin`），存放於：
+近年，有資安研究者公開揭露：Google Chrome PC 版會在**未通知使用者**的情況下，靜默下載約 **4 GB** 的 AI 模型檔案（`weights.bin`），存放於：
 
 ```text
 %LOCALAPPDATA%\Google\Chrome\User Data\OptGuideOnDeviceModel\
@@ -19,6 +19,14 @@
 此行為曝光後引發社群廣泛討論，Google 亦未就此公開正式回應。
 
 > **本專案的出發點**：既然模型已經在你硬碟裡，不如把它用好——在受控環境下啟動、驗證、並實際對話測試，而非讓它靜默佔用空間。
+
+## 截圖預覽
+
+<p align="center">
+  <img src="screenshot-menu.png" alt="終端機選單" width="48%">&nbsp;
+  <img src="screenshot-chat.png" alt="聊天測試介面" width="48%">
+</p>
+<p align="center"><sub>左：互動式終端機選單 &nbsp;｜&nbsp; 右：聊天測試介面</sub></p>
 
 ## 功能摘要
 
@@ -131,23 +139,3 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Start-GeminiNanoChrome.ps1
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\Import-OptGuideModel.ps1 -SourceVersionDir "C:\Path\To\OptGuideOnDeviceModel\<version>"
 ```
-
-## 匯出 GitHub Repo
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\Export-GitHubRepo.ps1
-```
-
-- 預設輸出：`<project_parent>\<project_name>-export`
-- 可用 `-TargetDir` 指定輸出位置
-- 目標路徑已存在時可加 `-Force` 覆蓋
-
-## Git 忽略與檔案大小
-
-- `model/**` 已忽略（避免推送大型模型檔）
-- `.chrome-user-data/` 已忽略（本機執行快取）
-- clone 後請先重新匯入模型包到 `model/<version>/`
-
-## 操作導覽
-
-- 開啟 `guide/index.html`
