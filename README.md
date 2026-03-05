@@ -1,10 +1,14 @@
+<p align="center">
+  <img src="nano-otter-runtime.png" alt="nano-otter-runtime banner" width="100%">
+</p>
+
 # Gemini Nano Local Starter
 
 將本機 Chrome 的 Gemini Nano（OptGuide On-Device Model）整理成可重複啟動、可驗證、可分享的專案模板。
 
 ## 事件背景
 
-2025 年，安全專家 **Zephyrianna** 在 X 平台揭露：Google Chrome PC 版會在**未通知使用者**的情況下，靜默下載約 **4 GB** 的 AI 模型檔案（`weights.bin`），存放於：
+2025 年，有資安研究者公開揭露：Google Chrome PC 版會在**未通知使用者**的情況下，靜默下載約 **4 GB** 的 AI 模型檔案（`weights.bin`），存放於：
 
 ```text
 %LOCALAPPDATA%\Google\Chrome\User Data\OptGuideOnDeviceModel\
@@ -12,7 +16,7 @@
 
 經分析確認，該檔案正是 **Gemini Nano**——Chrome 用於驅動內建 AI API（Prompt API）的本機推論模型。由於檔案設為唯讀，就算手動刪除，Chrome 仍會自動重新下載。
 
-此事件由香港科技媒體 [HKEPC](https://www.facebook.com/hkepc/posts/pfbid02CKkYaqJoHQQLRjPPAfohQWHmWMqCgpMxTjr257K1d57GfinvxuAVMdHdbpCtPDyil) 及 [Winaero](https://winaero.com/) 報道，引發廣泛討論。
+此行為曝光後引發社群廣泛討論，Google 亦未就此公開正式回應。
 
 > **本專案的出發點**：既然模型已經在你硬碟裡，不如把它用好——在受控環境下啟動、驗證、並實際對話測試，而非讓它靜默佔用空間。
 
@@ -41,7 +45,7 @@
 2. 選擇 `5`（Import -> Check -> Start），或依序執行 `1`、`2`、`3`。
 3. 開啟終端機輸出的網址：`http://localhost:<port>/chat-window.html`。
 
-## 模型檔案（重要：禁止提交到 Git）
+## 模型檔案
 
 模型檔（特別是 `weights.bin`）必須只留在本機，不可提交到任何 Git commit。
 
