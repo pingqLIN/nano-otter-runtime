@@ -1,0 +1,13 @@
+.chrome-user-data/
+.chrome-user-data*/
+extension/
+artifacts/
+
+# local model package (very large, machine-specific)
+model/**
+!model/.gitkeep
+!model/README.md
+
+# optional temp outputs
+*.log
+*.tmp

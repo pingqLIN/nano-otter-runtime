@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gemini Nano Chat Window</title>
+  <style>
+    :root {
+      --bg: #eef3fa;
+      --panel: #ffffff;
+      --text: #1b2433;
+      --muted: #5c6c84;
+      --line: #d5dfed;
+      --accent: #0f67e8;
+      --ok: #128a49;
+      --warn: #b76c00;
+      --user: #e9f2ff;
+      --bot: #f2f6fb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Noto Sans TC", Arial, sans-serif;
+      background: linear-gradient(180deg, #e8effb 0%, var(--bg) 45%);
+      color: var(--text);
+    }
+    .wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px 14px 24px;
+    }
+    .top {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 8px 24px rgba(12, 34, 74, 0.08);
+    }
+    h1 { margin: 0 0 8px; font-size: 1.25rem; }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+    .status.ok { background: #e8f8ee; color: var(--ok); }
+    .status.warn { background: #fff4e8; color: var(--warn); }
+    .hint {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.93rem;
+    }
+    .chat {
+      margin-top: 12px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      min-height: 380px;
+      max-height: 58vh;
+      overflow: auto;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .msg {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      max-width: 90%;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.55;
+    }
+    .msg.user {
+      align-self: flex-end;
+      background: var(--user);
+    }
+    .msg.bot {
+      align-self: flex-start;
+      background: var(--bot);
+    }
+    .meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .input {
+      margin-top: 12px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 88px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      font-family: inherit;
+      font-size: 0.98rem;
+    }
+    .actions {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    button {
+      border: 1px solid transparent;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 10px;
+      padding: 8px 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: #fff;
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    pre {
+      margin-top: 12px;
+      background: #0f1726;
+      color: #d7f2ff;
+      border-radius: 10px;
+      padding: 10px;
+      overflow: auto;
+      font-size: 0.86rem;
+      display: none;
+    }
+    .small { font-size: 0.9rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="top">
+      <h1>Gemini Nano 測試聊天視窗</h1>
+      <div id="status" class="status warn">Detecting API...</div>
+      <div class="hint">
+        有模型 API：直接回模型結果。沒有模型 API：自動切到 Echo 模式，先測輸入/輸出流程。
+      </div>
+      <div class="hint small">
+        提示：請用 <code>http://localhost:&lt;啟動時顯示的埠號&gt;/chat-window.html</code> 打開，不要用 file://。
+      </div>
+    </section>
+
+    <section id="chat" class="chat"></section>
+
+    <section class="input">
+      <textarea id="prompt" placeholder="輸入測試內容，例如：請用一句話介紹 Gemini Nano。"></textarea>
+      <div class="actions">
+        <button id="btnSend">Send</button>
+        <button id="btnSelfTest" class="secondary">Self Test</button>
+        <button id="btnClear" class="secondary">Clear</button>
+        <button id="btnProbe" class="secondary">Toggle Probe JSON</button>
+      </div>
+      <pre id="probeJson"></pre>
+    </section>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const state = {
+      mode: "detecting",
+      route: null,
+      session: null,
+      probe: null
+    };
+
+    function nowText() {
+      const d = new Date();
+      return d.toLocaleTimeString();
+    }
+
+    function addMessage(role, text, extra = "") {
+      const chat = $("chat");
+      const item = document.createElement("div");
+      item.className = `msg ${role}`;
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      meta.textContent = `${role === "user" ? "You" : "Bot"} • ${nowText()}${extra ? " • " + extra : ""}`;
+
+      const body = document.createElement("div");
+      body.textContent = text;
+
+      item.appendChild(meta);
+      item.appendChild(body);
+      chat.appendChild(item);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function setStatus(mode, route = null) {
+      state.mode = mode;
+      state.route = route;
+      const el = $("status");
+
+      if (mode === "model") {
+        el.className = "status ok";
+        el.textContent = `Model mode (${route})`;
+      } else if (mode === "echo") {
+        el.className = "status warn";
+        el.textContent = "Echo mode (no model API)";
+      } else {
+        el.className = "status warn";
+        el.textContent = "Detecting API...";
+      }
+    }
+
+    async function detectApi() {
+      const keys = Object.getOwnPropertyNames(window).filter(k => /ai|model|prompt/i.test(k)).sort();
+      const probe = {
+        url: location.href,
+        userAgent: navigator.userAgent,
+        hasWindowAi: !!window.ai,
+        windowAiKeys: window.ai ? Object.keys(window.ai) : [],
+        hasLanguageModelCreate: !!window.ai?.languageModel?.create,
+        hasCreateTextSession: !!window.ai?.createTextSession,
+        hasWindowLanguageModelCreate: !!window.LanguageModel?.create,
+        globalCandidates: keys
+      };
+      state.probe = probe;
+      $("probeJson").textContent = JSON.stringify(probe, null, 2);
+
+      if (window.ai?.languageModel?.create) {
+        setStatus("model", "window.ai.languageModel.create()");
+        return;
+      }
+      if (window.ai?.createTextSession) {
+        setStatus("model", "window.ai.createTextSession()");
+        return;
+      }
+      if (window.LanguageModel?.create) {
+        setStatus("model", "window.LanguageModel.create()");
+        return;
+      }
+      setStatus("echo");
+    }
+
+    async function getSession() {
+      if (state.session) return state.session;
+
+      if (state.route === "window.ai.languageModel.create()") {
+        state.session = await window.ai.languageModel.create();
+        return state.session;
+      }
+      if (state.route === "window.ai.createTextSession()") {
+        state.session = await window.ai.createTextSession();
+        return state.session;
+      }
+      if (state.route === "window.LanguageModel.create()") {
+        state.session = await window.LanguageModel.create();
+        return state.session;
+      }
+      return null;
+    }
+
+    async function runPrompt(input) {
+      if (state.mode !== "model") {
+        return `[Echo] ${input}`;
+      }
+      const session = await getSession();
+      if (!session?.prompt) {
+        throw new Error("Model session exists but prompt() not available.");
+      }
+      return await session.prompt(input);
+    }
+
+    async function send() {
+      const inputEl = $("prompt");
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      addMessage("user", text);
+      inputEl.value = "";
+
+      try {
+        const output = await runPrompt(text);
+        addMessage("bot", String(output), state.mode === "echo" ? "Echo fallback" : state.route);
+      } catch (e) {
+        addMessage("bot", `Error: ${String(e?.message || e)}`, "error");
+      }
+    }
+
+    $("btnSend").addEventListener("click", send);
+    $("btnSelfTest").addEventListener("click", async () => {
+      $("prompt").value = "Please respond with: test-ok";
+      await send();
+    });
+    $("btnClear").addEventListener("click", () => {
+      $("chat").innerHTML = "";
+      addMessage("bot", "Chat cleared.");
+    });
+    $("btnProbe").addEventListener("click", () => {
+      const pre = $("probeJson");
+      pre.style.display = pre.style.display === "block" ? "none" : "block";
+    });
+
+    $("prompt").addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        send();
+      }
+    });
+
+    detectApi().then(() => {
+      addMessage("bot", state.mode === "model"
+        ? "Model API detected. You can start chatting."
+        : "Model API not detected. Echo mode is active for input/output testing.");
+    });
+  </script>
+</body>
+</html>

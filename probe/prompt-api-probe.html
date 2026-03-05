@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gemini Nano Prompt API Probe</title>
+  <style>
+    body { font-family: Segoe UI, Arial, sans-serif; margin: 24px; line-height: 1.5; }
+    textarea { width: 100%; min-height: 100px; }
+    button { margin-top: 8px; margin-right: 8px; }
+    pre { background: #111; color: #d6f5d6; padding: 12px; border-radius: 6px; overflow: auto; }
+    .row { margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <h1>Gemini Nano Prompt API Probe</h1>
+
+  <div class="row">
+    <button id="btnProbe">Probe API</button>
+    <button id="btnPrompt">Try Prompt</button>
+  </div>
+
+  <div class="row">
+    <label for="promptInput">Prompt</label>
+    <textarea id="promptInput">Summarize this in one sentence: AgentScope local Gemini Nano test.</textarea>
+  </div>
+
+  <div class="row">
+    <h3>Probe</h3>
+    <pre id="probeOut"></pre>
+  </div>
+
+  <div class="row">
+    <h3>Prompt Result</h3>
+    <pre id="promptOut"></pre>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    function out(id, value) {
+      $(id).textContent = typeof value === "string" ? value : JSON.stringify(value, null, 2);
+    }
+
+    async function probeApi() {
+      const keys = Object.getOwnPropertyNames(window).filter(k => /ai|model|prompt/i.test(k)).sort();
+      const aiObj = window.ai || null;
+      const aiKeys = aiObj ? Object.keys(aiObj) : [];
+
+      const result = {
+        url: location.href,
+        userAgent: navigator.userAgent,
+        hasWindowAi: !!window.ai,
+        windowAiKeys: aiKeys,
+        hasLanguageModelCreate: !!window.ai?.languageModel?.create,
+        hasCreateTextSession: !!window.ai?.createTextSession,
+        hasWindowLanguageModelCreate: !!window.LanguageModel?.create,
+        globalCandidates: keys
+      };
+      out("probeOut", result);
+      return result;
+    }
+
+    async function tryPrompt(promptText) {
+      const tried = [];
+
+      if (window.ai?.languageModel?.create) {
+        try {
+          const session = await window.ai.languageModel.create();
+          const text = await session.prompt(promptText);
+          if (session?.destroy) await session.destroy();
+          return { ok: true, route: "window.ai.languageModel.create()", text };
+        } catch (e) {
+          tried.push({ route: "window.ai.languageModel.create()", error: String(e?.message || e) });
+        }
+      }
+
+      if (window.ai?.createTextSession) {
+        try {
+          const session = await window.ai.createTextSession();
+          const text = await session.prompt(promptText);
+          if (session?.destroy) await session.destroy();
+          return { ok: true, route: "window.ai.createTextSession()", text };
+        } catch (e) {
+          tried.push({ route: "window.ai.createTextSession()", error: String(e?.message || e) });
+        }
+      }
+
+      if (window.LanguageModel?.create) {
+        try {
+          const session = await window.LanguageModel.create();
+          const text = await session.prompt(promptText);
+          if (session?.destroy) await session.destroy();
+          return { ok: true, route: "window.LanguageModel.create()", text };
+        } catch (e) {
+          tried.push({ route: "window.LanguageModel.create()", error: String(e?.message || e) });
+        }
+      }
+
+      return { ok: false, message: "No usable Prompt API path found.", tried };
+    }
+
+    $("btnProbe").addEventListener("click", async () => {
+      await probeApi();
+    });
+
+    $("btnPrompt").addEventListener("click", async () => {
+      const prompt = $("promptInput").value || "";
+      out("promptOut", "Running...");
+      const result = await tryPrompt(prompt);
+      out("promptOut", result);
+    });
+
+    probeApi().catch((e) => out("probeOut", { error: String(e?.message || e) }));
+  </script>
+</body>
+</html>
+

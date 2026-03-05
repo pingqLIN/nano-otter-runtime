@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gemini Nano Local - 新手快速導覽</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #1a2433;
+      --muted: #4f6078;
+      --accent: #1068e8;
+      --ok: #0f9d58;
+      --warn: #d97706;
+      --border: #d8e0ed;
+    }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Noto Sans TC", Arial, sans-serif;
+      background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 45%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 18px 42px;
+    }
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(16, 41, 84, 0.07);
+    }
+    h1 { margin: 0 0 8px; font-size: 1.7rem; }
+    .sub { color: var(--muted); margin: 0; }
+    .actions { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      border: 1px solid transparent;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 10px;
+      padding: 10px 14px;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn.secondary {
+      background: #fff;
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .grid {
+      margin-top: 16px;
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .card h2 {
+      font-size: 1.06rem;
+      margin: 0 0 8px;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 0.8rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+    .ok { background: var(--ok); }
+    .warn { background: var(--warn); }
+    code, pre {
+      font-family: Consolas, "Courier New", monospace;
+      background: #0f1726;
+      color: #d6f1ff;
+      border-radius: 8px;
+    }
+    pre {
+      padding: 10px;
+      overflow-x: auto;
+      margin: 8px 0 0;
+      font-size: 0.9rem;
+    }
+    .small { color: var(--muted); font-size: 0.92rem; }
+    ul { padding-left: 1.2rem; margin: 8px 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Gemini Nano Local - 新手快速導覽</h1>
+      <p class="sub">目標：把你本機的 Chrome OptGuide 模型包接到可互動聊天視窗，直接測試輸入/輸出。</p>
+      <div class="actions">
+        <a class="btn" href="../start.cmd">啟動一鍵選單 (start.cmd)</a>
+        <button class="btn secondary" data-copy="powershell -ExecutionPolicy Bypass -File .\Start-QuickStart.ps1">複製 PowerShell 啟動指令</button>
+        <button class="btn secondary" data-copy="powershell -ExecutionPolicy Bypass -File .\scripts\Start-GeminiNanoChrome.ps1">複製 Chrome 啟動指令</button>
+      </div>
+      <p class="small">提示：請透過腳本開頁面（HTTP 模式），不要直接用 <code>file://</code> 開 <code>probe/*.html</code>。</p>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <span class="tag ok">Step 1</span>
+        <h2>匯入模型包</h2>
+        <p>預設來源路徑（自動偵測最新版本）：</p>
+        <pre>%LOCALAPPDATA%\Google\Chrome\User Data\OptGuideOnDeviceModel\&lt;latest_version&gt;</pre>
+        <p class="small">也可手動輸入其他版本資料夾。</p>
+      </article>
+
+      <article class="card">
+        <span class="tag ok">Step 2</span>
+        <h2>檢查完整性</h2>
+        <ul>
+          <li><code>weights.bin</code></li>
+          <li><code>manifest.json</code></li>
+          <li><code>on_device_model_execution_config.pb</code></li>
+        </ul>
+        <p class="small">會顯示 SHA256，方便確認檔案一致性。</p>
+      </article>
+
+      <article class="card">
+        <span class="tag ok">Step 3</span>
+        <h2>啟動 Chrome + Chat Window</h2>
+        <p>會建立獨立的 <code>.chrome-user-data</code>，不干擾你日常使用的 Chrome 設定。</p>
+        <p class="small">啟動後會自動使用可用埠，並開啟 <code>http://localhost:&lt;埠號&gt;/chat-window.html</code>。</p>
+      </article>
+
+      <article class="card">
+        <span class="tag ok">Step 4</span>
+        <h2>確認模型模式</h2>
+        <ul>
+          <li><code>Model mode</code>：代表已接上模型 API，可直接對話。</li>
+          <li><code>Echo mode</code>：先驗證輸入/輸出流程，待 API 可用再切模型。</li>
+        </ul>
+        <p class="small">需要細查 API 時，再打開 <code>probe/prompt-api-probe.html</code>。</p>
+      </article>
+
+      <article class="card">
+        <span class="tag warn">給 GitHub</span>
+        <h2>模型檔禁止提交到 Git</h2>
+        <p>此專案已將 <code>model/**</code> 設為忽略（僅保留 <code>model/.gitkeep</code> 與 <code>model/README.md</code>）。</p>
+        <p class="small">模型來源：<code>%LOCALAPPDATA%\Google\Chrome\User Data\OptGuideOnDeviceModel\&lt;version&gt;</code>；放置位置：<code>model/&lt;version&gt;/</code>。</p>
+      </article>
+    </section>
+
+    <section class="card" style="margin-top:14px;">
+      <h2>手動命令（進階）</h2>
+      <pre>powershell -ExecutionPolicy Bypass -File .\scripts\Import-OptGuideModel.ps1
+# 或手動指定來源
+powershell -ExecutionPolicy Bypass -File .\scripts\Import-OptGuideModel.ps1 -SourceVersionDir "C:\Path\To\OptGuideOnDeviceModel\&lt;version&gt;"
+powershell -ExecutionPolicy Bypass -File .\scripts\Check-ModelPack.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\Start-GeminiNanoChrome.ps1</pre>
+    </section>
+  </div>
+
+  <script>
+    document.querySelectorAll("[data-copy]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const text = btn.getAttribute("data-copy");
+        try {
+          await navigator.clipboard.writeText(text);
+          const prev = btn.textContent;
+          btn.textContent = "已複製";
+          setTimeout(() => btn.textContent = prev, 1200);
+        } catch {
+          alert("複製失敗，請手動複製。");
+        }
+      });
+    });
+  </script>
+</body>
+</html>
