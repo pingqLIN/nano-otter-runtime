@@ -34,6 +34,9 @@ Analysis confirmed this file is **Gemini Nano** — Chrome's on-device inference
 - Verify model integrity via SHA256
 - Launch an isolated Chrome Profile (no impact on daily browsing data)
 - Auto-open chat test page with Echo fallback
+- `NANO Exchange Layer`: multi-entity identify/log/protect on top of a single model connection
+- Male-call/Female-call switching (`callerStyle` envelope + routing prefix)
+- Multi-party chat scenario page for browser/account isolation tests
 - Interactive menu for first-time setup
 
 ## Quick Start
@@ -41,6 +44,33 @@ Analysis confirmed this file is **Gemini Nano** — Chrome's on-device inference
 1. Run `start.cmd` from the project root.
 2. Select `5` (Import → Check → Start), or run steps `1`, `2`, `3` individually.
 3. Open the URL shown in the terminal: `http://localhost:<port>/chat-window.html`
+4. Open the multi-entity scenario page: `http://localhost:<port>/multi-entity-chat.html`
+
+## NANO Exchange Layer (Goal A)
+
+This project adds `nano-exchange-layer.js` as a mandatory conversion/routing layer for both web chat and extension chat before model calls.
+
+- `identify`: routes by `entityId / browserId / accountId / callerStyle / channel`
+- `record`: writes audit events for every in/out message and runtime route
+- `protect`: redacts email/token patterns, enforces input limits, throttles entities, and serializes calls to protect single-session model runtime
+- `switch`: uses transformed prompt envelopes so one physical model session can safely serve multiple virtual conversation entities
+
+## Multi-Party Scenario (Goal B)
+
+Demo page: `probe/multi-entity-chat.html`
+
+Built-in entities:
+
+1. Male caller A (`browser-a / user-m-001 / male-call`)
+2. Female caller B (`browser-b / user-f-204 / female-call`)
+3. Supervisor C (`browser-c / manager-009 / neutral`)
+
+Run method:
+
+1. Start local environment with `start.cmd`.
+2. Open `http://localhost:<port>/multi-entity-chat.html`.
+3. Click `一鍵跑情境` to execute a scripted conversation mix.
+4. Verify `timeline + audit + entity snapshot` to ensure contexts stay isolated.
 
 ## Model Files
 
@@ -112,7 +142,14 @@ If stuck in `Echo mode`:
 | `scripts/Check-ModelPack.ps1`        | Verify model integrity        |
 | `scripts/Start-GeminiNanoChrome.ps1` | Launch Chrome + test page     |
 | `probe/chat-window.html`             | Chat test page                |
+| `probe/chat-window.js`               | Chat logic with exchange layer|
+| `probe/nano-exchange-layer.js`       | Web exchange layer core       |
+| `probe/multi-entity-chat.html`       | Multi-party scenario UI       |
+| `probe/multi-entity-chat.js`         | Scenario controller           |
 | `probe/prompt-api-probe.html`        | Prompt API diagnostic page    |
+| `extension/chat-window.html`         | Side panel UI with exchange layer |
+| `extension/chat-window.js`           | Side panel routing logic      |
+| `extension/nano-exchange-layer.js`   | Extension exchange core       |
 | `guide/index.html`                   | Visual setup guide            |
 
 ## Manual Commands
