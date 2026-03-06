@@ -61,9 +61,11 @@ Demo page: `probe/multi-entity-chat.html`
 
 Built-in entities:
 
-1. Male caller A (`browser-a / user-m-001 / male-call`)
-2. Female caller B (`browser-b / user-f-204 / female-call`)
-3. Supervisor C (`browser-c / manager-009 / neutral`)
+```markdown
+1. 實體 A (`browser-a / user-001 / default`)
+2. 實體 B (`browser-b / user-002 / default`)
+3. 實體 C (`browser-c / user-003 / default`)
+```
 
 Run method:
 
@@ -133,24 +135,24 @@ If stuck in `Echo mode`:
 
 ## Key Files
 
-| File                                 | Description                   |
-| ------------------------------------ | ----------------------------- |
-| `start.cmd`                          | Windows one-click entry point |
-| `Start-QuickStart.ps1`               | Menu launcher entry           |
-| `scripts/QuickStart-UI.ps1`          | Interactive menu flow         |
-| `scripts/Import-OptGuideModel.ps1`   | Import model package          |
-| `scripts/Check-ModelPack.ps1`        | Verify model integrity        |
-| `scripts/Start-GeminiNanoChrome.ps1` | Launch Chrome + test page     |
-| `probe/chat-window.html`             | Chat test page                |
-| `probe/chat-window.js`               | Chat logic with exchange layer|
-| `probe/nano-exchange-layer.js`       | Web exchange layer core       |
-| `probe/multi-entity-chat.html`       | Multi-party scenario UI       |
-| `probe/multi-entity-chat.js`         | Scenario controller           |
-| `probe/prompt-api-probe.html`        | Prompt API diagnostic page    |
+| File                                 | Description                       |
+| ------------------------------------ | --------------------------------- |
+| `start.cmd`                          | Windows one-click entry point     |
+| `Start-QuickStart.ps1`               | Menu launcher entry               |
+| `scripts/QuickStart-UI.ps1`          | Interactive menu flow             |
+| `scripts/Import-OptGuideModel.ps1`   | Import model package              |
+| `scripts/Check-ModelPack.ps1`        | Verify model integrity            |
+| `scripts/Start-GeminiNanoChrome.ps1` | Launch Chrome + test page         |
+| `probe/chat-window.html`             | Chat test page                    |
+| `probe/chat-window.js`               | Chat logic with exchange layer    |
+| `probe/nano-exchange-layer.js`       | Web exchange layer core           |
+| `probe/multi-entity-chat.html`       | Multi-party scenario UI           |
+| `probe/multi-entity-chat.js`         | Scenario controller               |
+| `probe/prompt-api-probe.html`        | Prompt API diagnostic page        |
 | `extension/chat-window.html`         | Side panel UI with exchange layer |
-| `extension/chat-window.js`           | Side panel routing logic      |
-| `extension/nano-exchange-layer.js`   | Extension exchange core       |
-| `guide/index.html`                   | Visual setup guide            |
+| `extension/chat-window.js`           | Side panel routing logic          |
+| `extension/nano-exchange-layer.js`   | Extension exchange core           |
+| `guide/index.html`                   | Visual setup guide                |
 
 ## Manual Commands
 
@@ -162,11 +164,24 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Start-GeminiNanoChrome.ps1
 
 ## 🤖 AI-Assisted Development
 
-This project was developed with AI assistance.
+<p align="center">
+  <img src="ai-assisted-badge.png" alt="AI-Assisted Development Badge" width="80%">
+</p>
 
-**AI Models/Services Used:**
+This project was developed with AI assistance via Google's **Antigravity** agentic coding platform.
 
-- Gemini 2.5 Pro (Google Antigravity)
+### AI Models / Services Used
+
+| Role                 | Model                               | Contribution                                                              |
+| -------------------- | ----------------------------------- | ------------------------------------------------------------------------- |
+| Coordinator & Worker | Gemini 2.5 Pro (Google Antigravity) | Architecture planning, code generation, documentation, debugging, testing |
+
+### Human Oversight
+
+- All AI-generated code reviewed and tested by the project maintainer
+- Critical paths (model import, integrity check, Chrome launch) manually verified on Windows
+- Git history reflects intentional, reviewed commits only
+- Model files (`weights.bin`) excluded from version control by design
 
 > ⚠️ **Disclaimer:** While the author has made every effort to review and validate the AI-generated code, no guarantee can be made regarding its correctness, security, or fitness for any particular purpose. Use at your own risk.
 

@@ -205,13 +205,26 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Import-OptGuideModel.ps1 -Sou
 
 ## AI 輔助開發聲明
 
-本專案在開發過程中使用 AI 工具輔助。
+<p align="center">
+  <img src="ai-assisted-badge.png" alt="AI 輔助開發" width="80%">
+</p>
 
-**使用的 AI 模型 / 服務：**
+本專案透過 Google **Antigravity** AI 代理平台，以 AI 輔助完成開發。
 
-- Gemini 2.5 Pro（Google Antigravity）
+### 使用的 AI 模型 / 服務
 
-> ⚠️ **免責聲明：** 雖然作者已盡力審查與驗證 AI 生成的內容，但無法保證其正確性、安全性或適用性。使用者需自行承擔風險。
+| 角色            | 模型                                 | 貢獻                                       |
+| --------------- | ------------------------------------ | ------------------------------------------ |
+| 協調者 & 執行者 | Gemini 2.5 Pro（Google Antigravity） | 架構規劃、程式碼生成、文件撰寫、除錯、測試 |
+
+### 人工監督
+
+- 所有 AI 生成的程式碼均經專案維護者審查與測試
+- 關鍵路徑（模型匯入、完整性驗證、Chrome 啟動）已在 Windows 上手動驗證
+- Git 提交記錄皆為有意識、經過審查的版本
+- 模型檔案（`weights.bin`）已透過設計排除於版本控制之外
+
+> ⚠️ **免責聲明：** 雖然作者已盡力審查與驗證 AI 生成的內容，但無法保證其正確性、安全性或適用於任何特定目的。使用者需自行承擔風險。
 
 ## License
 
