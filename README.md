@@ -164,17 +164,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Start-GeminiNanoChrome.ps1
 
 ## 🤖 AI-Assisted Development
 
-<p align="center">
-  <img src="ai-assisted-badge.png" alt="AI-Assisted Development Badge" width="80%">
-</p>
-
-This project was developed with AI assistance via Google's **Antigravity** agentic coding platform.
-
-### AI Models / Services Used
-
-| Role                 | Model                               | Contribution                                                              |
-| -------------------- | ----------------------------------- | ------------------------------------------------------------------------- |
-| Coordinator & Worker | Gemini 2.5 Pro (Google Antigravity) | Architecture planning, code generation, documentation, debugging, testing |
+This project was developed with AI assistance
 
 ### Human Oversight
 
